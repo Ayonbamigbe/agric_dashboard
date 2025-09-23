@@ -1,0 +1,28 @@
+{
+  "name": "agri-dashboard-root",
+  "version": "1.0.0",
+  "description": "Agricultural Harvest Data Analytics Dashboard",
+  "main": "index.js",
+  "scripts": {
+    "install-all": "npm install && cd backend && npm install && cd ../frontend && npm install",
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "server": "cd backend && npm run dev",
+    "client": "cd frontend && npm start",
+    "build": "cd frontend && npm run build",
+    "seed": "cd backend && npm run seed",
+    "test": "cd backend && npm test && cd ../frontend && npm test"
+  },
+  "keywords": [
+    "agriculture",
+    "dashboard",
+    "analytics",
+    "food-security",
+    "react",
+    "nodejs"
+  ],
+  "author": "Agricultural Dashboard Team",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
