@@ -24,7 +24,7 @@ Thumbs.db
 *.swp
 
 # Database dumps
-*.sql
+.sql
 *.sqlite
 
 # Misc
