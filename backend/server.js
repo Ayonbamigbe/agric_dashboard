@@ -17,14 +17,36 @@ require('dotenv').config();
 
 const PORT = process.env.PORT || 5001;
 
+// Debug environment variables
+if (process.env.DEBUG_ENV) {
+  console.log('🔍 Environment Debug Info:');
+  console.log('NODE_ENV:', process.env.NODE_ENV);
+  console.log('PORT:', process.env.PORT);
+  console.log('DATABASE_URL exists:', !!process.env.DATABASE_URL);
+  console.log('DATABASE_URL preview:', process.env.DATABASE_URL ? 
+    process.env.DATABASE_URL.substring(0, 20) + '...' : 'not set');
+  console.log('All env vars starting with DB_:', 
+    Object.keys(process.env).filter(key => key.startsWith('DB_')));
+}
+
 // Auto-initialize database and seed on startup
 async function initializeApp() {
   try {
     console.log('🚀 Starting Agricultural Dashboard API...');
+
+    // Test database connection with timeout
+    console.log('🔌 Testing database connection...');
+    const connectionTest = await Promise.race([
+      pool.query('SELECT NOW() as current_time, version() as pg_version'),
+      new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Connection timeout')), 10000)
+      )
+    ]);
     
-    // Wait for database connection
-    await pool.query('SELECT NOW()');
-    console.log('✅ Database connected');
+    console.log('✅ Database connected successfully');
+    console.log('⏰ Current time:', connectionTest.rows[0].current_time);
+    console.log('🐘 PostgreSQL version:', connectionTest.rows[0].pg_version.split(' ')[0]);
+
 
     // Check if database is initialized
     const tableCheck = await pool.query(`
@@ -55,7 +77,14 @@ async function initializeApp() {
     console.log('🎉 Database initialization complete!');
     
   } catch (error) {
-    console.error('❌ Database initialization failed:', error);
+    console.error('❌ Database initialization failed:', error.message);
+    console.error('🔍 Error details:', {
+      code: error.code,
+      errno: error.errno,
+      syscall: error.syscall,
+      address: error.address,
+      port: error.port
+    });
     // Don't exit - let the server start anyway for debugging
   }
 }
