@@ -6,8 +6,10 @@ import SoilChart from '../Charts/SoilChart';
 import MarketChart from '../Charts/MarketChart';
 import HarvestMap from '../Maps/HarvestMap';
 import ExportButton from '../common/ExportButton';
+import { useNavigate } from 'react-router-dom';
 
 const Dashboard = () => {
+  const navigate = useNavigate();
   const [dashboardData, setDashboardData] = useState(null);
   const [chartData, setChartData] = useState({
     yields: [],
@@ -25,6 +27,12 @@ const Dashboard = () => {
     loadDashboardData();
     loadChartData();
   }, [selectedRegion]);
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    navigate('/login');
+  };
 
   const loadDashboardData = async () => {
     try {
@@ -77,9 +85,15 @@ const Dashboard = () => {
       <div className="dashboard-header">
         <h1>Agricultural Harvest Dashboard</h1>
         <div className="user-info">
-          <span>Welcome, {user.username} ({user.role})</span>
+          <span>Welcome, {user.username} ({user.role})</span> 
         </div>
+        <span className="user-info">
+            <div>{/* ...dashboard UI... */}
+              <button onClick={handleLogout}>Logout</button>
+            </div> 
+          </span>
       </div>
+      
 
       <div className="controls">
         <div className="region-selector">
