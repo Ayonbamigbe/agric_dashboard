@@ -2,10 +2,12 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { authAPI } from '../../services/api';
 
-const Login = () => {
+const Register = () => {
   const [formData, setFormData] = useState({
+    username: '',
     email: '',
-    password: ''
+    password: '',
+    role: 'farmer'
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -24,7 +26,7 @@ const Login = () => {
     setError('');
 
     try {
-      const response = await authAPI.login(formData);
+      const response = await authAPI.register(formData);
       const { token, user } = response.data;
 
       localStorage.setItem('token', token);
@@ -32,7 +34,7 @@ const Login = () => {
 
       navigate('/dashboard');
     } catch (error) {
-      setError(error.response?.data?.message || 'Login failed');
+      setError(error.response?.data?.message || 'Registration failed');
     } finally {
       setLoading(false);
     }
@@ -41,11 +43,20 @@ const Login = () => {
   return (
     <div className="login-container">
       <div className="login-form">
-        <h2>Agricultural Dashboard Login</h2>
-        
+        <h2>Register for Agricultural Dashboard</h2>
         {error && <div className="error-message">{error}</div>}
-        
         <form onSubmit={handleSubmit}>
+          <div className="form-group">
+            <label htmlFor="username">Username:</label>
+            <input
+              type="text"
+              id="username"
+              name="username"
+              value={formData.username}
+              onChange={handleChange}
+              required
+            />
+          </div>
           <div className="form-group">
             <label htmlFor="email">Email:</label>
             <input
@@ -57,7 +68,6 @@ const Login = () => {
               required
             />
           </div>
-
           <div className="form-group">
             <label htmlFor="password">Password:</label>
             <input
@@ -69,22 +79,27 @@ const Login = () => {
               required
             />
           </div>
-
+          <div className="form-group">
+            <label htmlFor="role">Role:</label>
+            <select
+              id="role"
+              name="role"
+              value={formData.role}
+              onChange={handleChange}
+              required
+            >
+              <option value="farmer">Farmer</option>
+              <option value="researcher">Researcher</option>
+              <option value="policymaker">Policymaker</option>
+            </select>
+          </div>
           <button type="submit" disabled={loading}>
-            {loading ? 'Logging in...' : 'Login'}
+            {loading ? 'Registering...' : 'Register'}
           </button>
         </form>
-
         <div className="demo-accounts">
-          <h4>Demo Accounts:</h4>
-          <p><strong>Farmer:</strong> farmer@demo.com / password123</p>
-          <p><strong>Researcher:</strong> researcher@demo.com / password123</p>
-          <p><strong>Policymaker:</strong> policy@demo.com / password123</p>
-          <br />
-          <hr />
-          <br />
-           <p>
-            Don't have an account? <Link to="/register">Register here</Link>
+          <p>
+            Already have an account? <Link to="/login">Login here</Link>
           </p>
         </div>
       </div>
@@ -92,4 +107,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Register;
