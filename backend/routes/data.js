@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const auth = require('../middleware/auth');
+const dataController = require('../controllers/dataController');
 const pool = require('../config/database');
 
 // Get crop yields
@@ -248,5 +249,55 @@ router.get('/export/:type', auth, async (req, res) => {
     res.status(500).json({ message: 'Error exporting data' });
   }
 });
+
+// Each route logs entry and uses controller for logic
+router.post('/crop-yield', auth, dataController.uploadCropYield);
+router.post('/weather', auth, dataController.uploadWeather);
+router.post('/market-price', auth, dataController.uploadMarketPrice);
+
+// // Farmer uploads crop yield
+// router.post('/crop-yield', authenticate, async (req, res) => {
+//   if (req.user.role !== 'farmer') return res.status(403).json({ message: 'Forbidden' });
+//   const { region, crop_type, yield_amount, harvest_date } = req.body;
+//   try {
+//     await pool.query(
+//       'INSERT INTO crop_yields (region, crop_type, yield_amount, harvest_date, farmer_id) VALUES ($1, $2, $3, $4, $5)',
+//       [region, crop_type, yield_amount, harvest_date, req.user.id]
+//     );
+//     res.json({ message: 'Crop yield uploaded' });
+//   } catch (err) {
+//     res.status(500).json({ message: 'Error uploading crop yield' });
+//   }
+// });
+
+// // Researcher uploads weather data
+// router.post('/weather', authenticate, async (req, res) => {
+//   if (req.user.role !== 'researcher') return res.status(403).json({ message: 'Forbidden' });
+//   const { region, date, temperature, rainfall, humidity, wind_speed } = req.body;
+//   try {
+//     await pool.query(
+//       'INSERT INTO weather_data (region, date, temperature, rainfall, humidity, wind_speed) VALUES ($1, $2, $3, $4, $5, $6)',
+//       [region, date, temperature, rainfall, humidity, wind_speed]
+//     );
+//     res.json({ message: 'Weather data uploaded' });
+//   } catch (err) {
+//     res.status(500).json({ message: 'Error uploading weather data' });
+//   }
+// });
+
+// // Policymaker uploads market price
+// router.post('/market-price', authenticate, async (req, res) => {
+//   if (req.user.role !== 'policymaker') return res.status(403).json({ message: 'Forbidden' });
+//   const { commodity, date, price, market_location, unit } = req.body;
+//   try {
+//     await pool.query(
+//       'INSERT INTO market_prices (commodity, date, price, market_location, unit) VALUES ($1, $2, $3, $4, $5)',
+//       [commodity, date, price, market_location, unit]
+//     );
+//     res.json({ message: 'Market price uploaded' });
+//   } catch (err) {
+//     res.status(500).json({ message: 'Error uploading market price' });
+//   }
+// });
 
 module.exports = router;

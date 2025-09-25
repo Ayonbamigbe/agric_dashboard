@@ -33,6 +33,18 @@ api.interceptors.response.use(
 export const authAPI = {
   login: (credentials) => api.post('/auth/login', credentials),
   register: (userData) => api.post('/auth/register', userData),
+  uploadCropYield: (data) =>
+    axios.post(`${API_BASE_URL}/data/crop-yield`, data, {
+      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+    }),
+  uploadWeather: (data) =>
+    axios.post(`${API_BASE_URL}/data/weather`, data, {
+      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+    }),
+  uploadMarketPrice: (data) =>
+    axios.post(`${API_BASE_URL}/data/market-price`, data, {
+      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+    }),
 };
 
 export const dashboardAPI = {

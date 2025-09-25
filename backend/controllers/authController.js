@@ -50,17 +50,28 @@ const register = async (req, res) => {
     const { username, email, password, role } = req.body;
 
     if (!username || !email || !password || !role) {
+      console.log('⚠️ Registration: Missing fields')
       return res.status(400).json({ message: 'All fields are required' });
     }
 
-    const existingUser = await User.findByEmail(email);
-    if (existingUser) {
+    // Check for existing username
+    const userByUsername = await User.findByUsername(username);
+    if (userByUsername) {
+      console.log(`⛔ Registration: Username "${username}" already exists`);
+      return res.status(409).json({ message: 'Username already exists' });
+    }
+
+    // Check for existing email
+    const userByEmail = await User.findByEmail(email);
+    if (userByEmail) {
+      console.log(`⛔ Registration: Email "${email}" already exists`);
       return res.status(409).json({ message: 'User already exists' });
     }
 
     const user = await User.create({ username, email, password, role });
     const token = generateToken(user);
 
+    console.log(`✅ Registration: User "${username}" created successfully`);
     res.status(201).json({
       message: 'User created successfully',
       token,
@@ -72,7 +83,18 @@ const register = async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('Registration error:', error);
+  // Check for unique constraint violation from database
+    if (error.code === '23505') {
+      if (error.detail && error.detail.includes('username')) {
+        console.log(`⛔ Registration: Duplicate username error from DB`);
+        return res.status(409).json({ message: 'Username already exists' });
+      }
+      if (error.detail && error.detail.includes('email')) {
+        console.log(`⛔ Registration: Duplicate email error from DB`);
+        return res.status(409).json({ message: 'Email already exists' });
+      }
+    }
+    console.error('❌ Registration error:', error);
     res.status(500).json({ message: 'Server error' });
   }
 };

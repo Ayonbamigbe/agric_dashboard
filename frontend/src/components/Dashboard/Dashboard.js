@@ -6,10 +6,18 @@ import SoilChart from '../Charts/SoilChart';
 import MarketChart from '../Charts/MarketChart';
 import HarvestMap from '../Maps/HarvestMap';
 import ExportButton from '../common/ExportButton';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const Dashboard = () => {
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
   const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    navigate('/login');
+  };
+
   const [dashboardData, setDashboardData] = useState(null);
   const [chartData, setChartData] = useState({
     yields: [],
@@ -21,18 +29,12 @@ const Dashboard = () => {
   const [error, setError] = useState('');
   const [selectedRegion, setSelectedRegion] = useState('all');
 
-  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  
 
   useEffect(() => {
     loadDashboardData();
     loadChartData();
   }, [selectedRegion]);
-
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    navigate('/login');
-  };
 
   const loadDashboardData = async () => {
     try {
@@ -84,6 +86,17 @@ const Dashboard = () => {
     <div className="dashboard">
       <div className="dashboard-header">
         <h1>Agricultural Harvest Dashboard</h1>
+        <div>
+        {user?.role === 'farmer' && (
+          <Link to="/upload-crop-yield">Upload Crop Yield</Link>
+        )}
+        {user?.role === 'researcher' && (
+          <Link to="/upload-weather">Upload Weather Data</Link>
+        )}
+        {user?.role === 'policymaker' && (
+          <Link to="/upload-market-price">Upload Market Price</Link>
+        )}
+        </div>
         <div className="user-info">
           <span>Welcome, {user.username} ({user.role})</span> 
         </div>
