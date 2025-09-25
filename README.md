@@ -278,7 +278,7 @@ start.bat
 
 For support and questions:
 - Create an issue on GitHub
-- Email: support@agridashboard.com
+- Email: ayox2012@gmail.com
 
 ## 📄 License
 
